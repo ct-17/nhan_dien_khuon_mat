@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import pickle
+import argparse
 
 face_cascade = cv2.CascadeClassifier('data/faces/haarcascade_frontalface_alt2.xml')
 eye_cascade = cv2.CascadeClassifier('data/faces/haarcascade_eye.xml')
@@ -10,12 +11,19 @@ smile_cascade = cv2.CascadeClassifier('data/faces/haarcascade_smile.xml')
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read("./data/data_write/face-trainner.yml")
 
+ap = argparse.ArgumentParser()
+ap.add_argument("-v", "--video", help="Duong dan toi video.")
+args = vars(ap.parse_args())
+
 labels = {"person_name": 1}
 with open("data/data_write/face-labels.pickle", 'rb') as f:
 	og_labels = pickle.load(f)
 	labels = {v:k for k,v in og_labels.items()}
 
-cap = cv2.VideoCapture(0)
+if not args.get("video", False):
+	cap = cv2.VideoCapture(0)
+else:
+	cap = cv2.VideoCapture(args["video"])
 
 while(True):
     ret, frame = cap.read()
